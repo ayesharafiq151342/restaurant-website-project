@@ -26,6 +26,7 @@ const config = {
         atkinson: ['"Atkinson Hyperlegible Mono"', 'monospace'],
         tharoma: ['Tharoma', 'sans-serif'],      
         montserrat: ['Montserrat', 'sans-serif'],
+         bangers: ['Bangers', 'cursive'],
 
       },
     },

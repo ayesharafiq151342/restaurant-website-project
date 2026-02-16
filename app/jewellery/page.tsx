@@ -1,9 +1,9 @@
 "use client";
 
-import Navbar from "./component/navbar";
+import Navbar from "../component/navbar";
 import Image from "next/image";
 import { motion } from "framer-motion";
-import ProductGrid from "./component/ProductGrid";
+import ProductGrid from "../component/ProductGrid";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faWhatsapp } from "@fortawesome/free-brands-svg-icons";
@@ -15,8 +15,8 @@ import {
   RefreshCcw,
   ShieldCheck,
 } from "lucide-react";
-import ReviewCarousel from "./component/rewies";
-import Footer from "./component/footer_jewllery";
+import ReviewCarousel from "../component/rewies";
+import Footer from "../component/footer_jewllery";
 import { useState } from "react";
 export default function Home({ params }: { params: { slug: string } }) {
     const collections = [

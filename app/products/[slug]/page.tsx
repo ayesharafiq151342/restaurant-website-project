@@ -4,11 +4,11 @@ import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import Image from "next/image";
 import { products, Product } from "@/app/data/products";
-import Navbar from "@/app/jewellery/component/navbar";
+import Navbar from "@/app/component/navbar";
 import { motion } from "framer-motion";
-import ProductGrid from "@/app/jewellery/component/ProductGrid";
-import Footer from "@/app/jewellery/component/footer_jewllery";
-import { useCart } from "@/app/jewellery/component/CartContext";
+import ProductGrid from "@/app/component/ProductGrid";
+import Footer from "@/app/component/footer_jewllery";
+import { useCart } from "@/app/component/CartContext";
 
 export default function ProductPage() {
   const params = useParams();

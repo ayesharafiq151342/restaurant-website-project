@@ -1,12 +1,12 @@
 "use client";
 
-import Navbar from "../jewellery/component/navbar";
+import Navbar from "../component/navbar";
 import Image from "next/image";
 import { motion } from "framer-motion";
 
-import Footer from "../jewellery/component/footer_jewllery";
-import ProductGrid from "../jewellery/component/ProductGrid";
-import ShopCollectiondev from "../jewellery/component/shopcollection";
+import Footer from "../component/footer_jewllery";
+import ProductGrid from "../component/ProductGrid";
+import ShopCollectiondev from "../component/shopcollection";
 export default function MAla() {
 
   return (

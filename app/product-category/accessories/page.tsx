@@ -1,11 +1,11 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import Navbar from "../../jewellery/component/navbar";
-import Sidebar from "../../jewellery/component/sidebar";
-import ProductGrid from "@/app/jewellery/component/ProductGrid";
-import PriceFilter from "@/app/jewellery/component/PriceFilter";
-import SearchSection from "@/app/jewellery/component/serach";
+import Navbar from "../../component/navbar";
+import Sidebar from "../../component/sidebar";
+import ProductGrid from "@/app/component/ProductGrid";
+import PriceFilter from "@/app/component/PriceFilter";
+import SearchSection from "@/app/component/serach";
 import { products } from "@/app/data/products";
 
 export default function AccessoriesPage() {

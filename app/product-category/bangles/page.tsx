@@ -1,11 +1,11 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import ProductGrid from "@/app/jewellery/component/ProductGrid";
-import Sidebar from "../../jewellery/component/sidebar";
-import PriceFilter from "@/app/jewellery/component/PriceFilter";
+import ProductGrid from "@/app/component/ProductGrid";
+import Sidebar from "../../component/sidebar";
+import PriceFilter from "@/app/component/PriceFilter";
 import { products } from "@/app/data/products";
-import Navbar from "../../jewellery/component/navbar";
+import Navbar from "../../component/navbar";
 
 export default function MalaPage() {
   // CATEGORY + SEARCH

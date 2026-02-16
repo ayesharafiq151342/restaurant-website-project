@@ -4,7 +4,7 @@ import { useState } from "react";
 import Image from "next/image";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGoogle, faFacebookF } from "@fortawesome/free-brands-svg-icons";
-import Navbar from "../jewellery/component/navbar";
+import Navbar from "../component/navbar";
 
 export default function SignInPage() {
   const [email, setEmail] = useState("");
