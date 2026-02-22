@@ -140,50 +140,131 @@ const texts = [
 </div>
 
 
-   <button className="bg-[var(--golden)] mb-10 uppercase  font-bold  font-tharoma  text-sm md:text-lg lg:text-2xl m-auto text-white px-6 xl:mt-15 xl:mb-15  py-3 rounded-lg flex items-center gap-2 hover:opacity-90 transition">
-    Get In Touch
-      <FontAwesomeIcon icon={faWhatsapp} />
-    </button>
 
-<section className="w-full px-4 bg-[var(--skin)] xl:mt-7 md:px-12 py-12 text-center">
-    
-      {/* HEADING */}
-      <div className="font-tharoma uppercase text-2xl md:text-3xl lg:text-4xl text-gray-800 mb-8">
-       Shop our Collections
-      </div>
 
-      {/* COLLECTION ROW */}
-      <div className="flex flex-wrap md:h-54 items-center justify-center gap-6 md:gap-10">
-        {collections.map((item, i) => (
-          <motion.div
-            key={i}
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: i * 0.1 }}
-            whileHover={{ scale: 1.1 }}
-            className="flex flex-col items-center cursor-pointer"
-          >
-            {/* ROUND IMAGE */}
-            <div className="w-20 h-20 md:w-24 md:h-24 rounded-full overflow-hidden border border-gray-200 shadow-sm">
-              <Image
-                src={item.img}
-                alt={item.name}
-                width={96}
-                height={96}
-                className="object-cover"
-              />
-            </div>
+<section className="relative -mt-34 z-20">
+  <div className="py-16">
+    <div className="max-w-6xl mx-auto grid md:grid-cols-3 text-center shadow-2xl">
 
-            {/* TEXT */}
-            <p className="mt-2 text-sm md:text-base text-gray-700">
-              {item.name}
-            </p>
-          </motion.div>
-        ))}
-      </div>
-    </section>
+      {/* Card 1 */}
+      <motion.div
+        initial={{ opacity: 0, y: 80 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.7 }}
+        whileHover={{ y: -10 }}
+        viewport={{ once: true }}
+        className="bg-[var(--accent)] text-white p-10"
+      >
+        <div className="text-4xl mb-4">🍸</div>
+        <h3 className="text-2xl font-semibold italic mb-4">
+          Perfect for dining
+        </h3>
+        <p className="text-sm leading-6 mb-6">
+          Cras justo odio, dapibus ac facilisis in, egestas eget quam.
+        </p>
+        <a href="#" className="uppercase text-sm font-semibold tracking-wider hover:underline">
+          Read More
+        </a>
+      </motion.div>
+
+      {/* Card 2 */}
+      <motion.div
+        initial={{ opacity: 0, y: 80 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.7, delay: 0.2 }}
+        whileHover={{ y: -10 }}
+        viewport={{ once: true }}
+        className="bg-[var(--primary)] p-10 text-white"
+      >
+        <div className="text-4xl mb-4">🍲</div>
+        <h3 className="text-2xl font-semibold italic mb-4">
+          Always New Menu
+        </h3>
+        <p className="text-sm leading-6 mb-6">
+          Cras justo odio, dapibus ac facilisis in, egestas eget quam.
+        </p>
+        <a href="#" className="uppercase text-sm font-semibold tracking-wider hover:underline">
+          Read More
+        </a>
+      </motion.div>
+
+      {/* Card 3 */}
+      <motion.div
+        initial={{ opacity: 0, y: 80 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.7, delay: 0.4 }}
+        whileHover={{ y: -10 }}
+        viewport={{ once: true }}
+        className="bg-[var(--accent)] p-10 text-white"
+      >
+        <div className="text-4xl mb-4">🛎️</div>
+        <h3 className="text-2xl font-semibold italic mb-4">
+          Only Best Service
+        </h3>
+        <p className="text-sm leading-6 mb-6">
+          Cras justo odio, dapibus ac facilisis in, egestas eget quam.
+        </p>
+        <a href="#" className="uppercase text-sm font-semibold tracking-wider hover:underline">
+          Read More
+        </a>
+      </motion.div>
+
+    </div>
+  </div>
+</section>
+
+
+
+<section className=" py-20">
+  <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-10 items-center px-6">
+
+  
+    <div>
+      <h2 className="text-5xl font-serif italic mb-4">Little About Us</h2>
+      <h4 className="uppercase tracking-widest text-gray-600 mb-6">
+        The History of Us
+      </h4>
+
+      <p className="text-gray-600 leading-7 mb-8">
+  We are a university canteen built on a passion for fresh flavors and affordable meals. What started as a small campus spot has grown into a favorite gathering place for students and staff alike.
+    </p>
+
+      <button className="border border-[var(--primary)] px-6 py-3 uppercase tracking-wider hover:bg-[var(--primary)] hover:text-white transition">
+        Learn More
+      </button>
+    </div>
+
+ 
+   <div className="flex gap-8 justify-center">
+
+  <motion.img
+    src="/food-circle-5.webp"
+    alt="Food 1"
+    initial={{ opacity: 0, y: 60 }}
+    whileInView={{ opacity: 1, y: 0 }}
+    transition={{ duration: 0.8 }}
+    whileHover={{ scale: 1.08 }}
+    viewport={{ once: true }}
+    className="w-56 h-56 rounded-full object-cover shadow-lg cursor-pointer"
+  />
+
+  <motion.img
+    src="/food-circle-6.webp"
+    alt="Food 2"
+    initial={{ opacity: 0, y: 60 }}
+    whileInView={{ opacity: 1, y: 0 }}
+    transition={{ duration: 0.8, delay: 0.3 }}
+    whileHover={{ scale: 1.08 }}
+    viewport={{ once: true }}
+    className="w-56 h-56 rounded-full object-cover shadow-lg cursor-pointer"
+  />
+
+</div>
+  </div>
+</section>
+         <ProductGrid limit={6} />
     <div className="md:px-14">      
-         <ProductGrid limit={8} />
+
       </div>
     <div className=" flex justify-center"><a href="/jewellery">
       <button
@@ -255,7 +336,7 @@ const texts = [
 <section className="w-full px-4 md:px-12 py-12 text-center">
       
       {/* HEADING */}
-      <div className="font-atkinson text-2xl md:text-3xl lg:text-4xl text-gray-800 mb-8">
+      <div className="font-atkinson text-2xl md:text-3xl lg:text-4xl text-white mb-8">
         Shop By Collections
       </div>
 
@@ -366,7 +447,7 @@ Indulge in opulence with Zak's designer jewellery collection, epitomizing exquis
 <section className="w-full px-4  xl:mt-7 md:px-12 py-12 text-center">
       
       {/* HEADING */}
-      <div className="font-tharoma uppercase text-2xl md:text-3xl lg:text-4xl text-gray-800 mb-8">
+      <div className="font-tharoma uppercase text-2xl md:text-3xl lg:text-4xl text-white mb-8">
        Shop our Collections
       </div>
 

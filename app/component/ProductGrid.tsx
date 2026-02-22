@@ -1,152 +1,127 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
-import { products } from "@/app/data/products";
+import { motion } from "framer-motion";
+import { products } from "./products";
 import { useMemo, useState } from "react";
-import { ShoppingBag } from "lucide-react";
 
 interface ProductGridProps {
   limit?: number;
-  category?: string;
-  maxPrice?: number; // ✅ NEW
-  imgHeight?: string;
-  imgWidth?: string;
-  columns?: number;
 }
 
-type SortType = "default" | "low-high" | "high-low" | "rating";
+type CategoryType = "all" | "signature" | "snacks" | "drinks";
 
-export default function ProductGrid({
-  limit,
-  category,
-  maxPrice,
-  imgHeight,
-  imgWidth,
-  columns,
-}: ProductGridProps) {
-  const [sort, setSort] = useState<SortType>("default");
+export default function ProductGrid({ limit = 6 }: ProductGridProps) {
+  const [category, setCategory] = useState<CategoryType>("signature");
 
+  // Compute visible products
   const visibleProducts = useMemo(() => {
-    let list = category
-      ? products.filter(
-          (p) => p.category.toLowerCase() === category.toLowerCase()
-        )
-      : products;
+    let list = products;
 
-    // ✅ PRICE FILTER
-    if (maxPrice) {
-      list = list.filter((p) => p.price <= maxPrice);
+    // Filter by category if not "all"
+    if (category !== "all") {
+      list = list.filter(
+        (p) => p.category.toLowerCase() === category.toLowerCase()
+      );
     }
 
-    // SORTING
-    if (sort === "low-high") list = [...list].sort((a, b) => a.price - b.price);
-    if (sort === "high-low") list = [...list].sort((a, b) => b.price - a.price);
-    if (sort === "rating")
-      list = [...list].sort((a, b) => (b.rating || 0) - (a.rating || 0));
-
-    // LIMIT
-    if (limit) list = list.slice(0, limit);
-
-    return list;
-  }, [category, maxPrice, sort, limit]);
-
-  // GRID LAYOUT
-const gridClass =
-  columns === 2
-    ? "grid-cols-1 sm:grid-cols-2"
-    : columns === 3
-    ? "grid-cols-1 sm:grid-cols-2 md:grid-cols-3"
-    : "grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4";
-
-  // NO PRODUCTS
-  if (visibleProducts.length === 0) {
-    return (
-      <div className="bg-gray-200 p-8 rounded-lg text-center border-t-4 border-[var(--text_skin)]">
-        <h2 className="text-lg font-bold">
-          No products were found matching your selection.
-        </h2>
-        <p className="text-sm mt-2 text-gray-600">
-          Please try another filter.
-        </p>
-      </div>
-    );
-  }
+    // Limit to first `limit` items
+    return list.slice(0, limit);
+  }, [category, limit]);
 
   return (
-    <section className="w-full px-4 md:px-8 py-12">
-      {/* SORT */}
-   <div className="mb-6 flex flex-col sm:flex-row sm:justify-end gap-2">
-  <select
-    value={sort}
-    onChange={(e) => setSort(e.target.value as SortType)}
-    className="w-full sm:w-auto border px-4 py-2 rounded-md text-sm"
-  >
-    <option value="default">Relevance</option>
-    <option value="rating">Sort by Average Rating</option>
-    <option value="low-high">Price: Low → High</option>
-    <option value="high-low">Price: High → Low</option>
-  </select>
-</div>
+    <section className="w-full bg-[var(--skin)] py-20 px-6 relative overflow-hidden">
 
-      {/* GRID */}
-      <div className={`grid gap-6 ${gridClass}`}>
-        {visibleProducts.map((item) => (
-          <Link key={item.id} href={`/products/${item.slug}`}>
-            <div className="group cursor-pointer">
-              {/* IMAGE */}
-              <div
-                className={`relative bg-[#f6f2ec] overflow-hidden rounded-md ${
-                  imgHeight ||
-                  "h-[280px] sm:h-[300px] md:h-[360px] lg:h-[440px]"
-                } ${imgWidth || "w-full"}`}
-              >
-                {item.discount && (
-                  <span className="absolute top-3 left-3 bg-white text-xs px-3 py-1 rounded-full shadow z-10">
-                    Sale!
-                  </span>
-                )}
+      {/* HEADING */}
+      <div className="text-center mb-12">
+        <h2 className="text-4xl md:text-5xl font-extrabold text-[#5a0d0d] uppercase leading-tight">
+          Street Favorites Made <br /> Fresh Every Day
+        </h2>
+      </div>
 
-                <span className="absolute top-3 right-3 bg-white p-2 rounded-full shadow opacity-0 group-hover:opacity-100 transition z-10">
-                  <ShoppingBag size={16} />
-                </span>
+      {/* CATEGORY BUTTONS */}
+      <div className="flex justify-center gap-4 mb-16">
+        {["all", "signature", "snacks", "drinks"].map((cat) => (
+          <button
+            key={cat}
+            onClick={() => setCategory(cat as CategoryType)}
+            className={`px-8 py-3 rounded-full font-bold uppercase transition ${
+              category === cat
+                ? "bg-orange-400 text-white"
+                : "bg-gray-200 text-gray-500"
+            }`}
+          >
+            {cat}
+          </button>
+        ))}
+      </div>
 
+      {/* PRODUCT GRID */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-10 max-w-7xl mx-auto">
+        {visibleProducts.map((item, index) => (
+          <motion.div
+            key={item.id}
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: index * 0.2, ease: "easeOut" }}
+            className="relative bg-[var(--accent)] rounded-xl p-6 pt-16 text-center hover:-translate-y-2 transition duration-300"
+          >
+
+            {/* 🍕 Pizza on First Card */}
+            {index === 0 && (
+              <div className="absolute -top-40 left-12 -translate-x-1/2 hidden lg:block">
                 <Image
-                  src={item.image}
-                  alt={item.name}
-                  fill
-                  className="object-cover group-hover:scale-105 transition duration-500"
+                  src="/Group-8-e1769572982358.png"
+                  alt="Pizza"
+                  width={120}
+                  height={120}
                 />
               </div>
+            )}
 
-              {/* CONTENT */}
-              <div className="pt-3 space-y-1">
-                <p className="text-[11px] uppercase tracking-wide text-gray-400">
-                  {item.category}
-                </p>
-                <p className="text-sm text-gray-800 leading-snug">
-                  {item.name}
-                </p>
+            {/* 🥤 Pepsi on Third Card */}
+            {index === 2 && (
+              <div className="absolute -top-50 left-1/2 translate-x-1/2 hidden lg:block">
+                <Image
+                  src="/Group-10.png"
+                  alt="Pepsi"
+                  width={120}
+                  height={120}
+                />
+              </div>
+            )}
 
-                <div className="flex gap-2 items-center text-sm">
-                  {item.oldPrice && (
-                    <span className="line-through text-gray-400">
-                      Rs {item.oldPrice}
-                    </span>
-                  )}
-                  <span className="font-semibold text-black">
-                    Rs {item.price}
-                  </span>
-                </div>
+            {/* PRODUCT IMAGE */}
+            <div className="relative h-56 w-full mb-8">
+              <Image
+                src={item.image}
+                alt={item.name}
+                fill
+                className="object-contain"
+              />
+            </div>
 
-                {item.rating && (
-                  <p className="text-yellow-500 text-sm">
-                    ⭐ {item.rating.toFixed(1)} / 5
-                  </p>
-                )}
+            {/* INFO BOX */}
+            <div className="bg-[#f3e5d8] rounded-lg p-6 text-left">
+              <h3 className="text-lg font-extrabold text-[#5a0d0d] uppercase">
+                {item.name}
+              </h3>
+
+              <p className="text-sm text-gray-600 mt-2">
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+              </p>
+
+              <div className="flex items-center justify-between mt-5">
+                <span className="bg-orange-400 text-white px-4 py-2 rounded-md font-bold">
+                  PKR {item.price.toLocaleString()}
+                </span>
+
+                <button className="text-orange-500 font-bold uppercase text-sm hover:underline">
+                  Order Now →
+                </button>
               </div>
             </div>
-          </Link>
+          </motion.div>
         ))}
       </div>
     </section>
