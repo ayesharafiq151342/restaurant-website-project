@@ -5,6 +5,8 @@
 @import "@fontsource/montserrat/700.css";
 :root {
 --primary: #d78d27;
+--primary-hover: #fab24d;
+
   --accent: #4c0a06;
   --whitebg: #f6f4ee;
   --textDark: #1E1B4B;
