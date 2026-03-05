@@ -1,63 +1,49 @@
 "use client";
 
-import { useState } from "react";
-import { Menu, X } from "lucide-react"; // optional icons, or use any
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { LayoutDashboard, Package, LogOut } from "lucide-react";
 
-interface SidebarProps {
-  categories: string[];
-  onCategorySelect: (category: string | null) => void;
-  selectedCategory?: string | null;
-}
+export default function SidebarAdmin() {
+  const pathname = usePathname();
 
-export default function Sidebar({ categories, onCategorySelect, selectedCategory }: SidebarProps) {
-  const [isOpen, setIsOpen] = useState(false);
+  const menu = [
+    { name: "Dashboard", path: "/admin", icon: LayoutDashboard },
+    { name: "Products", path: "/admin/products", icon: Package },
+  ];
 
   return (
-    <>
-      {/* Mobile toggle button */}
-      <div className="md:hidden mb-4">
-        <button
-          onClick={() => setIsOpen(!isOpen)}
-          className="flex items-center gap-2 px-4 py-2 bg-[var(--golden)] text-white rounded"
-        >
-          {isOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-          Filters
-        </button>
-      </div>
+    <div className="w-64 bg-white shadow-lg p-6 hidden md:block">
+      <h2 className="text-2xl font-bold text-orange-500 mb-8">
+        Admin Panel
+      </h2>
 
-      {/* Sidebar */}
-      <aside
-        className={`w-full md:w-64 p-4 bg-white shadow rounded-lg space-y-6
-          ${isOpen ? "block" : "hidden"} md:block
-        `}
-      >
-        <div>
-          <h2 className="text-sm font-medium mb-2">Categories</h2>
-          <ul className="space-y-2">
-            <li
-              onClick={() => onCategorySelect(null)}
-              className={`cursor-pointer text-sm ${
-                selectedCategory === null ? "font-semibold text-[var(--golden)]" : "text-gray-600"
+      <div className="space-y-4">
+        {menu.map((item, index) => {
+          const Icon = item.icon;
+          const active = pathname === item.path;
+
+          return (
+            <Link
+              key={index}
+              href={item.path}
+              className={`flex items-center gap-3 p-3 rounded-lg transition ${
+                active
+                  ? "bg-orange-400 text-white"
+                  : "text-gray-700 hover:bg-gray-200"
               }`}
             >
-              All
-            </li>
-            {categories.map((cat) => (
-              <li
-                key={cat}
-                onClick={() => onCategorySelect(cat)}
-                className={`cursor-pointer text-sm xl:text-xl montserrat ${
-                  selectedCategory === cat
-                    ? "font-montserrat text-[var(--text_skin)]"
-                    : "text-[var(--text_skin)] font-bold"
-                }`}
-              >
-                {cat}
-              </li>
-            ))}
-          </ul>
-        </div>
-      </aside>
-    </>
+              <Icon size={20} />
+              {item.name}
+            </Link>
+          );
+        })}
+      </div>
+
+      <button className="mt-10 flex items-center gap-3 text-red-500 hover:text-red-700">
+        <LogOut size={20} />
+        Logout
+      </button>
+    </div>
   );
 }

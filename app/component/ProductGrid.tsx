@@ -34,7 +34,7 @@ export default function ProductGrid({ limit = 6 }: ProductGridProps) {
 
       {/* HEADING */}
       <div className="text-center mb-12">
-        <h2 className="text-4xl md:text-5xl font-extrabold text-[#5a0d0d] uppercase leading-tight">
+        <h2 className="text-4xl md:text-5xl font-extrabold text-[var(--accent)] uppercase leading-tight">
           Street Favorites Made <br /> Fresh Every Day
         </h2>
       </div>
@@ -47,7 +47,7 @@ export default function ProductGrid({ limit = 6 }: ProductGridProps) {
             onClick={() => setCategory(cat as CategoryType)}
             className={`px-8 py-3 rounded-full font-bold uppercase transition ${
               category === cat
-                ? "bg-orange-400 text-white"
+                ? "bg-[var(--primary)] text-white"
                 : "bg-gray-200 text-gray-500"
             }`}
           >
@@ -112,11 +112,11 @@ export default function ProductGrid({ limit = 6 }: ProductGridProps) {
               </p>
 
               <div className="flex items-center justify-between mt-5">
-                <span className="bg-orange-400 text-white px-4 py-2 rounded-md font-bold">
+                <span className="bg-[var(--primary)] text-white px-4 py-2 rounded-md font-bold">
                   PKR {item.price.toLocaleString()}
                 </span>
 
-                <button className="text-orange-500 font-bold uppercase text-sm hover:underline">
+                <button className="text-[var(--primary)] font-bold uppercase text-sm hover:underline">
                   Order Now →
                 </button>
               </div>
