@@ -1,24 +1,43 @@
 "use client";
-import { useEffect,useState } from "react";
-import api from "@/utils/api";
+import { useState, useEffect, useMemo } from "react";
+import axios from "axios";
+import ProductGrid from "../admin/ProductGrid";
 
-export default function UserDashboard(){
-  const [products,setProducts]=useState<any[]>([]);
-  useEffect(()=>{ api.get("/products").then(res=>setProducts(res.data)); },[]);
+type CategoryType = "all" | "signature" | "snacks" | "drinks";
 
-  return(
-    <div className="p-10">
-      <h1 className="text-3xl font-bold mb-6">User Dashboard</h1>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-        {products.map(p=>(
-          <div key={p._id} className="border p-4 rounded">
-            <h3 className="font-bold">{p.name}</h3>
-            <p>PKR {p.price}</p>
-            <p>Category: {p.category}</p>
-            <img src={p.image} className="h-40 w-full object-contain"/>
-          </div>
+interface Product {
+  _id: string;
+  name: string;
+  price: number;
+  category: string;
+  image: string;
+  description: string;
+}
+
+export default function UserPage() {
+  const [products, setProducts] = useState<Product[]>([]);
+  const [filter, setFilter] = useState<CategoryType>("all");
+
+  useEffect(() => {
+    axios.get("http://localhost:5000/api/products").then((res) => setProducts(res.data));
+  }, []);
+
+  const visibleProducts = useMemo(() => {
+    if (filter === "all") return products;
+    return products.filter((p) => p.category === filter);
+  }, [filter, products]);
+
+  return (
+    <div className="min-h-screen p-6 bg-[var(--skin)]">
+      <div className="flex justify-center gap-4 mb-10 mt-4">
+        {["all", "signature", "snacks", "drinks"].map((cat) => (
+          <button key={cat} onClick={() => setFilter(cat as CategoryType)} className={`px-6 py-2 rounded-full font-semibold transition ${filter === cat ? "bg-[var(--primary)] text-white" : "bg-gray-200"}`}>
+            {cat.toUpperCase()}
+          </button>
         ))}
       </div>
+
+      <ProductGrid products={visibleProducts} isAdmin={false} />
     </div>
   );
 }

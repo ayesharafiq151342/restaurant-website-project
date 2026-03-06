@@ -9,12 +9,12 @@ export default function SidebarAdmin() {
 
   const menu = [
     { name: "Dashboard", path: "/admin", icon: LayoutDashboard },
-    { name: "Products", path: "/admin/products", icon: Package },
+    { name: "Products", path: "@/admin/productsadmin", icon: Package },
   ];
 
   return (
     <div className="w-64 bg-white shadow-lg p-6 hidden md:block">
-      <h2 className="text-2xl font-bold text-orange-500 mb-8">
+      <h2 className="text-2xl font-bold  text-[var(--primary)] p-3 rounded-lg mb-8">
         Admin Panel
       </h2>
 
@@ -29,7 +29,7 @@ export default function SidebarAdmin() {
               href={item.path}
               className={`flex items-center gap-3 p-3 rounded-lg transition ${
                 active
-                  ? "bg-orange-400 text-white"
+                  ? "bg-[var(--primary)] text-white"
                   : "text-gray-700 hover:bg-gray-200"
               }`}
             >
