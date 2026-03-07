@@ -1,3 +1,5 @@
+"use client";
+
 import { useState, useRef, useEffect } from "react";
 
 const categories = [
@@ -6,42 +8,56 @@ const categories = [
   { value: "drinks", label: "🥤 Cool Drinks" },
 ];
 
-export default function CustomDropdown({ onChange }: { onChange?: (value: string) => void }) {
+export default function CustomDropdown({
+  onChange,
+}: {
+  onChange?: (value: string) => void;
+}) {
+
   const [selected, setSelected] = useState(categories[0]);
   const [open, setOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  // Close dropdown when clicked outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
         setOpen(false);
       }
     };
+
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
+
   }, []);
 
   const handleSelect = (cat: typeof categories[0]) => {
     setSelected(cat);
     setOpen(false);
-    if (onChange) onChange(cat.value);
+    onChange?.(cat.value);
   };
 
   return (
-    <div className="relative w-full max-w-full" ref={dropdownRef}>
-      {/* Dropdown Button */}
+    <div className="relative w-full" ref={dropdownRef}>
+
+      {/* Button */}
       <button
+        type="button"
         onClick={() => setOpen(!open)}
-        className="w-full p-3 border rounded-xl bg-white shadow-md flex justify-between items-center focus:outline-none"
+        className="w-full p-3 border rounded-xl bg-white shadow-md flex justify-between items-center"
       >
         {selected.label}
-        <span className={`transition-transform ${open ? "rotate-180" : ""}`}>▼</span>
+        <span className={`transition-transform ${open ? "rotate-180" : ""}`}>
+          ▼
+        </span>
       </button>
 
-      {/* Dropdown List */}
+      {/* Dropdown */}
       {open && (
-        <div className="absolute w-full mt-1 bg-white rounded-xl shadow-lg overflow-hidden z-10">
+        <div className="absolute w-full mt-1 bg-white rounded-xl shadow-lg overflow-hidden z-50">
+
           {categories.map((cat) => (
             <div
               key={cat.value}
@@ -51,6 +67,7 @@ export default function CustomDropdown({ onChange }: { onChange?: (value: string
               {cat.label}
             </div>
           ))}
+
         </div>
       )}
     </div>

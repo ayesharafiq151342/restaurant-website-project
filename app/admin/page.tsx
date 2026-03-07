@@ -1,24 +1,19 @@
+// AdminDashboard.tsx
 "use client";
+
 import { useState, useEffect, useMemo } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
 import SidebarAdmin from "../component/sidebar";
-import ProductGrid from "./ProductGrid";
+import ProductGrid, { Product } from "./ProductGrid";
 import CustomDropdown from "./CustomDropdown";
 
 type CategoryType = "all" | "signature" | "snacks" | "drinks";
 
-interface Product {
-  _id: string;
-  name: string;
-  price: number;
-  category: string;
-  image: string;
-  description: string;
-}
-
 export default function AdminDashboard() {
   const [products, setProducts] = useState<Product[]>([]);
+  const [cart, setCart] = useState<Product[]>([]); // Cart state
+  const [isLoggedIn, setIsLoggedIn] = useState(false); // Example login state
   const [name, setName] = useState("");
   const [price, setPrice] = useState("");
   const [category, setCategory] = useState<CategoryType>("signature");
@@ -65,14 +60,10 @@ export default function AdminDashboard() {
 
     try {
       if (editId) {
-        await axios.put(`http://localhost:5000/api/products/${editId}`, formData, {
-          headers: { "Content-Type": "multipart/form-data" },
-        });
+        await axios.put(`http://localhost:5000/api/products/${editId}`, formData, { headers: { "Content-Type": "multipart/form-data" } });
         Swal.fire({ icon: "success", title: "Updated Successfully 🎉", confirmButtonColor: "var(--primary)" });
       } else {
-        await axios.post("http://localhost:5000/api/products", formData, {
-          headers: { "Content-Type": "multipart/form-data" },
-        });
+        await axios.post("http://localhost:5000/api/products", formData, { headers: { "Content-Type": "multipart/form-data" } });
         Swal.fire({ icon: "success", title: "Added Successfully 🎉", confirmButtonColor: "var(--primary)" });
       }
       resetForm();
@@ -93,12 +84,8 @@ export default function AdminDashboard() {
 
   const deleteProduct = async (id: string) => {
     const result = await Swal.fire({
-      title: "Are you sure?",
-      text: "Product will be deleted!",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "var(--primary)",
-      cancelButtonColor: "#6b7280",
+      title: "Are you sure?", text: "Product will be deleted!", icon: "warning",
+      showCancelButton: true, confirmButtonColor: "var(--primary)", cancelButtonColor: "#6b7280",
       confirmButtonText: "Yes Delete",
     });
     if (result.isConfirmed) {
@@ -118,10 +105,29 @@ export default function AdminDashboard() {
     return products.filter((p) => p.category === filter);
   }, [filter, products]);
 
+  // Order function with login check
+  const handleOrder = (product: Product) => {
+    if (!isLoggedIn) {
+      Swal.fire({
+        icon: "info",
+        title: "Login Required",
+        text: "Please login to place an order",
+        confirmButtonColor: "var(--primary)",
+      });
+      return;
+    }
+    setCart([...cart, product]);
+    Toast.fire({ icon: "success", title: `${product.name} added to cart` });
+  };
+
+  const totalPrice = cart.reduce((total, item) => total + item.price, 0);
+  const totalItems = cart.length;
+
   return (
     <div className="flex min-h-screen bg-[var(--skin)]">
       <SidebarAdmin />
       <div className="flex-1 p-6 overflow-y-auto">
+
         {/* FORM */}
         <div className="mb-12 max-w-md mx-auto p-6 bg-white/40 backdrop-blur-md rounded-2xl shadow-2xl">
           <h2 className="text-2xl font-bold text-center mb-4">{editId ? "Edit Product" : "Add Product"}</h2>
@@ -129,7 +135,7 @@ export default function AdminDashboard() {
             <input type="text" placeholder="Product Name" value={name} onChange={(e) => setName(e.target.value)} className="p-3 border rounded-lg focus:ring-2 focus:ring-[var(--primary)]" />
             <textarea placeholder="Product Description" value={description} onChange={(e) => setDescription(e.target.value)} className="p-3 border rounded-lg focus:ring-2 focus:ring-[var(--primary)]" />
             <input type="number" placeholder="Price" value={price} onChange={(e) => setPrice(e.target.value)} className="p-3 border rounded-lg focus:ring-2 focus:ring-[var(--primary)]" />
-            <CustomDropdown />
+            <CustomDropdown onChange={(value) => setCategory(value as CategoryType)} />
             <label className="flex flex-col items-center justify-center w-full h-36 border-2 border-dashed border-[var(--primary)] rounded-xl cursor-pointer bg-[var(--primary)]/10 hover:bg-[var(--primary)]/20 transition">
               <span className="text-3xl">📷</span>
               <p className="text-sm font-semibold">Upload product image</p>
@@ -153,7 +159,20 @@ export default function AdminDashboard() {
         </div>
 
         {/* GRID */}
-        <ProductGrid products={visibleProducts} isAdmin={true} onEdit={editProduct} onDelete={deleteProduct} />
+        <ProductGrid
+          products={visibleProducts}
+          isAdmin={true}
+          onEdit={editProduct}
+          onDelete={deleteProduct}
+          onOrder={handleOrder}
+        />
+
+        {/* Cart Summary */}
+        <div className="mt-10 flex justify-end gap-4 items-center">
+          <span className="font-bold">Items: {totalItems}</span>
+          <span className="text-sm font-semibold">Rs {totalPrice}</span>
+        </div>
+
       </div>
     </div>
   );

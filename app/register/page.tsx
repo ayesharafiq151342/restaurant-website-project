@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import api from "@/utils/api";
 
 export default function Register() {
+  const [name, setName] = useState(""); // NEW: name state
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [role, setRole] = useState("user");
@@ -15,23 +16,19 @@ export default function Register() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await api.post("/auth/register", { email, password, role });
-     setPopup("Registration Successful 🎉");
+      // Send name along with email, password, role
+      await api.post("/auth/register", { name, email, password, role });
 
-setTimeout(() => {
-  router.push("/login"); // <-- redirect to login page
-}, 2000);
-
-
- 
+      setPopup("Registration Successful 🎉");
+      setTimeout(() => {
+        router.push("/login"); // redirect to login page
+      }, 2000);
 
     } catch (err: any) {
       const message = err.response?.data?.message || "Registration failed ❌";
       setPopup(message);
 
-      setTimeout(() => {
-        setPopup("");
-      }, 2000);
+      setTimeout(() => setPopup(""), 2000);
     }
   };
 
@@ -39,12 +36,10 @@ setTimeout(() => {
     <div className="relative min-h-screen flex items-center justify-center bg-[#e9dcd6] overflow-hidden px-4">
 
       {/* Background Shapes */}
-   <div className="absolute top-0 left-0 w-[450px] h-[450px] bg-[var(--primary)] rounded-br-[200px]"></div>
-<div className="absolute bottom-0 left-0 w-[400px] h-[300px] bg-[var(--accent)] rounded-tr-[200px]"></div>
-
-{/* Right Side Shapes */}
-<div className="absolute top-0 right-0 w-[450px] h-[450px] bg-[var(--accent)] rounded-bl-[200px]"></div>
-<div className="absolute bottom-0 right-0 w-[400px] h-[300px] bg-[var(--primary)] rounded-tl-[200px]"></div>
+      <div className="absolute top-0 left-0 w-[450px] h-[450px] bg-[var(--primary)] rounded-br-[200px]"></div>
+      <div className="absolute bottom-0 left-0 w-[400px] h-[300px] bg-[var(--accent)] rounded-tr-[200px]"></div>
+      <div className="absolute top-0 right-0 w-[450px] h-[450px] bg-[var(--accent)] rounded-bl-[200px]"></div>
+      <div className="absolute bottom-0 right-0 w-[400px] h-[300px] bg-[var(--primary)] rounded-tl-[200px]"></div>
 
       {/* Popup */}
       {popup && (
@@ -59,10 +54,7 @@ setTimeout(() => {
         {/* LEFT */}
         <div className="w-full md:w-1/2 p-12 flex flex-col justify-center">
           <div className="mb-10">
-                              <h1 className="text-4xl font-extrabold text-[var(--accent)]">
-
-              🍔 Foodle
-            </h1>
+            <h1 className="text-4xl font-extrabold text-[var(--accent)]">🍔 Foodle</h1>
             <p className="text-gray-500 text-sm">Made with love ❤️</p>
           </div>
 
@@ -70,21 +62,35 @@ setTimeout(() => {
           <p className="text-gray-500 mb-6">Register as User or Admin</p>
 
           <form onSubmit={handleSubmit} className="space-y-5">
+            {/* Name Input */}
+            <input
+              type="text"
+              placeholder="Enter Your Name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              className="w-full px-5 py-3 rounded-full bg-orange-50 focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
+              required
+            />
+
+            {/* Email Input */}
             <input
               type="email"
               placeholder="Enter Email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-                         className="w-full px-5 py-3 rounded-full bg-orange-50 focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
-  />
+              className="w-full px-5 py-3 rounded-full bg-orange-50 focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
+              required
+            />
 
+            {/* Password Input */}
             <input
               type="password"
               placeholder="Enter Password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-                       className="w-full px-5 py-3 rounded-full bg-orange-50 focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
-           />
+              className="w-full px-5 py-3 rounded-full bg-orange-50 focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
+              required
+            />
 
             {/* Role Dropdown */}
             <div className="relative w-full">
@@ -127,20 +133,16 @@ setTimeout(() => {
 
             <button
               type="submit"
-                          className="w-full bg-[var(--primary)] hover:bg-[var(--primary-hover)] transition text-white py-3 rounded-full font-semibold shadow-lg"
-     >
+              className="w-full bg-[var(--primary)] hover:bg-[var(--primary-hover)] transition text-white py-3 rounded-full font-semibold shadow-lg"
+            >
               Sign Up
             </button>
           </form>
         </div>
 
         {/* RIGHT */}
-               <div className="hidden md:flex w-1/2 bg-[var(--primary)] items-center justify-center">
-    <img
-            src="/burger.png"
-            alt="Burger"
-            className="w-[85%] drop-shadow-2xl"
-          />
+        <div className="hidden md:flex w-1/2 bg-[var(--primary)] items-center justify-center">
+          <img src="/burger.png" alt="Burger" className="w-[85%] drop-shadow-2xl" />
         </div>
       </div>
     </div>

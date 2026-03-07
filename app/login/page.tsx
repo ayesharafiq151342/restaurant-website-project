@@ -1,42 +1,34 @@
-"use client";
+"use client"; // Must be first line
 
-import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useAuth } from "../context/AuthContext";
 import api from "@/utils/api";
 
-interface LoginProps {
-  mode?: "login" | "signup"; // default is login
-}
-
-export default function AuthForm({ mode = "login" }: LoginProps) {
+export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
   const [popup, setPopup] = useState("");
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirectTo = searchParams.get("redirect") || "/user"; // redirect after login
+  const { login } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const endpoint = mode === "login" ? "/auth/login" : "/auth/signup";
-      const res = await api.post(endpoint, { email, password });
-      const role = res.data.user.role;
+      const res = await api.post("/auth/login", { email, password });
+      const userData = res.data.user;
 
-      setPopup(`${mode === "login" ? "Login" : "Signup"} Successful 🎉`);
+      login(userData); // save user to context
 
+      setPopup("Login Successful 🎉");
       setTimeout(() => {
-        if (mode === "login") {
-          role === "admin" ? router.push("/admin") : router.push("/user");
-        } else {
-          router.push("/user"); // After signup, always go to user dashboard
-        }
-      }, 2000);
-
+        router.push(redirectTo); // go to dashboard or previous page
+      }, 1000);
     } catch (err: any) {
-      const message = err.response?.data?.message || `${mode} failed ❌`;
-      setError(message);
+      const message = err.response?.data?.message || "Login failed ❌";
       setPopup(message);
-
       setTimeout(() => setPopup(""), 2000);
     }
   };
@@ -62,7 +54,7 @@ export default function AuthForm({ mode = "login" }: LoginProps) {
         <div className="w-full md:w-1/2 p-12 flex flex-col justify-center">
           <h1 className="text-4xl font-extrabold text-[var(--accent)]">🍔 Foodle</h1>
           <p className="text-gray-500 text-sm mb-8">Made with love ❤️</p>
-          <h2 className="text-2xl font-bold mb-6">{mode === "login" ? "Login" : "Sign Up"}</h2>
+          <h2 className="text-2xl font-bold mb-6">Login</h2>
 
           <form onSubmit={handleSubmit} className="space-y-5">
             <input
@@ -71,6 +63,7 @@ export default function AuthForm({ mode = "login" }: LoginProps) {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className="w-full px-5 py-3 rounded-full bg-orange-50 focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
+              required
             />
             <input
               type="password"
@@ -78,37 +71,24 @@ export default function AuthForm({ mode = "login" }: LoginProps) {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="w-full px-5 py-3 rounded-full bg-orange-50 focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
+              required
             />
             <button
               type="submit"
               className="w-full bg-[var(--primary)] hover:bg-[var(--primary-hover)] transition text-white py-3 rounded-full font-semibold shadow-lg"
             >
-              {mode === "login" ? "Login" : "Sign Up"}
-            </button>{/* Inside the Left Card, below the form */}
-<p className="mt-4 text-sm text-gray-500">
-  {mode === "login" ? (
-    <>
-      Don't have an account?{" "}
-      <span
-        onClick={() => router.push("/register")} // or set mode if same page
-        className="text-[var(--accent)] font-semibold cursor-pointer hover:underline"
-      >
-        Sign Up
-      </span>
-    </>
-  ) : (
-    <>
-      Already have an account?{" "}
-      <span
-        onClick={() => router.push("/login")}
-        className="text-[var(--accent)] font-semibold cursor-pointer hover:underline"
-      >
-        Login
-      </span>
-    </>
-  )}
-</p>
+              Login
+            </button>
 
+            <p className="mt-4 text-sm text-gray-500">
+              Don't have an account?{" "}
+              <span
+                onClick={() => router.push("/register")}
+                className="text-[var(--accent)] font-semibold cursor-pointer hover:underline"
+              >
+                Sign Up
+              </span>
+            </p>
           </form>
         </div>
 

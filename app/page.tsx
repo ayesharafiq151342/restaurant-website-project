@@ -226,8 +226,8 @@ export default function Home({ params }: { params: { slug: string } }) {
         ))}
       </div>
 
-      <ProductGrid products={visibleProducts} isAdmin={false} />
-    </div>
+      <ProductGrid products={visibleProducts} isAdmin={false} limit={6} />
+   </div>
 
 
 <Footer/>
