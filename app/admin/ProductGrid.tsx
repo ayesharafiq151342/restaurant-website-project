@@ -2,7 +2,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import OrderButton from "../component/oederbtn";
+import OrderButton from "../component/orderbtn";
 
 export interface Product {
   _id: string;
@@ -85,7 +85,12 @@ export default function ProductGrid({
                   </button>
                 </div>
               ) : (
-            <OrderButton productId={item._id} />
+          <OrderButton
+  productId={item._id}
+
+  
+/>
+
               )}
             </div>
           </div>
