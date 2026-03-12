@@ -1,11 +1,11 @@
 "use client";
-import { createContext, useContext, useState, ReactNode } from "react";
 
-// Define the full user type
+import { createContext, useContext, useState, ReactNode, useEffect } from "react";
+
 interface UserType {
   _id: string;
   email: string;
-  name?: string; // optional, because some users may not have a name
+  name?: string;
   role?: "user" | "admin";
 }
 
@@ -18,10 +18,26 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
+
   const [user, setUser] = useState<UserType | null>(null);
 
-  const login = (userData: UserType) => setUser(userData);
-  const logout = () => setUser(null);
+  // load user from localStorage
+  useEffect(() => {
+    const savedUser = localStorage.getItem("user");
+    if (savedUser) {
+      setUser(JSON.parse(savedUser));
+    }
+  }, []);
+
+  const login = (userData: UserType) => {
+    setUser(userData);
+    localStorage.setItem("user", JSON.stringify(userData));
+  };
+
+  const logout = () => {
+    setUser(null);
+    localStorage.removeItem("user");
+  };
 
   return (
     <AuthContext.Provider value={{ user, login, logout }}>

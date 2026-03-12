@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { CartProvider } from "./component/CartContext";
-import { AuthProvider } from "./context/AuthContext"; // import AuthProvider
+import { AuthProvider } from "./context/AuthContext";
+import { OrderProvider } from "./component/OrderContext"; // <-- import OrderProvider
 import "./globals.css";
 
 const geistSans = Geist({
@@ -21,16 +22,16 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+}: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" className="h-full">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased h-full`}
       >
         <AuthProvider>
-          <CartProvider>{children}</CartProvider>
+          <OrderProvider>
+            <CartProvider>{children}</CartProvider>
+          </OrderProvider>
         </AuthProvider>
       </body>
     </html>

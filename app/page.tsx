@@ -9,6 +9,8 @@ import axios from "axios";
 import Footer from "./component/footer_jewllery";
 
 import ProductGrid from "./admin/ProductGrid";
+import ParallaxSection from "./component/paralex";
+import FoodGridHero from "./component/imagesgrid";
 
 type CategoryType = "all" | "signature" | "snacks" | "drinks";
 
@@ -228,8 +230,8 @@ export default function Home({ params }: { params: { slug: string } }) {
 
       <ProductGrid products={visibleProducts} isAdmin={false} limit={6} />
    </div>
-
-
+<ParallaxSection />
+<FoodGridHero />
 <Footer/>
     </>
   );

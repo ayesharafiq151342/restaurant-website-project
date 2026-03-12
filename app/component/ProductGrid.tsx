@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { products } from "./products";
+
 import { useMemo, useState } from "react";
 
 interface ProductGridProps {
