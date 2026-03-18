@@ -9,6 +9,7 @@ interface Order {
   image: string;
   price: number;
   quantity: number;
+  status?: "Received" | "Cooking" | "Ready"; // ✅ Add status
   createdAt: string;
 }
 
@@ -28,19 +29,28 @@ export const OrderProvider = ({ children }: { children: ReactNode }) => {
   const { user } = useAuth();
   const [orders, setOrders] = useState<Order[]>([]);
 
+  // ✅ Fetch orders for current user (with status)
   const fetchOrders = async () => {
     if (!user) return;
     try {
       const res = await fetch(`http://localhost:5000/api/orders/${user._id}`);
       const data = await res.json();
-      setOrders(data.orders || []);
+      // Map to ensure status exists
+      const updated = (data.orders || []).map((o: Order) => ({
+        ...o,
+        status: o.status || "Received",
+      }));
+      setOrders(updated);
     } catch (err) {
       console.error(err);
     }
   };
 
+  // ✅ Poll orders every 5s to reflect admin updates
   useEffect(() => {
     fetchOrders();
+    const interval = setInterval(fetchOrders, 5000);
+    return () => clearInterval(interval);
   }, [user]);
 
   const updateQuantityBackend = async (id: string, qty: number) => {

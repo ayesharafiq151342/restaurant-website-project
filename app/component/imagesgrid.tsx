@@ -72,9 +72,9 @@ export default function FoodGridHero() {
 
       {/* Floating Side Icons */}
       <div className="fixed right-4 top-1/2 -translate-y-1/2 flex flex-col gap-2 z-20">
-        <button className="bg-lime-400 p-3 text-white">🛒</button>
-        <button className="bg-lime-400 p-3 text-white">📷</button>
-        <button className="bg-lime-400 p-3 text-white">💼</button>
+        <button className="bg-[var(--primary)] p-3 text-white">🛒</button>
+        <button className="bg-[var(--primary)] p-3 text-white">📷</button>
+        <button className="bg-[var(--primary)] p-3 text-white">💼</button>
       </div>
 
     </section>

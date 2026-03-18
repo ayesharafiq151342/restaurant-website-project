@@ -22,10 +22,28 @@ export default function AdminDashboard() {
   const [preview, setPreview] = useState<string | null>(null);
   const [editId, setEditId] = useState<string | null>(null);
   const [filter, setFilter] = useState<CategoryType>("all");
+const [notifications, setNotifications] = useState<any[]>([]);
 
   useEffect(() => {
     fetchProducts();
   }, []);
+useEffect(() => {
+fetch("http://localhost:5000/api/notifications")
+
+    .then(res => res.json())
+    .then(data => {
+      setNotifications(data);
+
+      if (data.length > 0) {
+        Swal.fire({
+          icon: "info",
+          title: "New Order 🛒",
+          text: "You have a new order!",
+          confirmButtonColor: "var(--primary)",
+        });
+      }
+    });
+}, []);
 
   const fetchProducts = async () => {
     const res = await axios.get("http://localhost:5000/api/products");
@@ -126,29 +144,93 @@ export default function AdminDashboard() {
   return (
     <div className="flex min-h-screen bg-[var(--skin)]">
       <SidebarAdmin />
-      <div className="flex-1 p-6 overflow-y-auto">
+      <div className="flex-1  overflow-y-auto">
 
-        {/* FORM */}
-        <div className="mb-12 max-w-md mx-auto p-6 bg-white/40 backdrop-blur-md rounded-2xl shadow-2xl">
-          <h2 className="text-2xl font-bold text-center mb-4">{editId ? "Edit Product" : "Add Product"}</h2>
-          <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-            <input type="text" placeholder="Product Name" value={name} onChange={(e) => setName(e.target.value)} className="p-3 border rounded-lg focus:ring-2 focus:ring-[var(--primary)]" />
-            <textarea placeholder="Product Description" value={description} onChange={(e) => setDescription(e.target.value)} className="p-3 border rounded-lg focus:ring-2 focus:ring-[var(--primary)]" />
-            <input type="number" placeholder="Price" value={price} onChange={(e) => setPrice(e.target.value)} className="p-3 border rounded-lg focus:ring-2 focus:ring-[var(--primary)]" />
-            <CustomDropdown onChange={(value) => setCategory(value as CategoryType)} />
-            <label className="flex flex-col items-center justify-center w-full h-36 border-2 border-dashed border-[var(--primary)] rounded-xl cursor-pointer bg-[var(--primary)]/10 hover:bg-[var(--primary)]/20 transition">
-              <span className="text-3xl">📷</span>
-              <p className="text-sm font-semibold">Upload product image</p>
-              <input type="file" accept="image/*" className="hidden" onChange={(e) => handleImageChange(e.target.files?.[0] || null)} />
-            </label>
-            {preview && <img src={preview} className="h-40 object-contain rounded-lg border" />}
-            <div className="flex gap-3">
-              <button type="submit" className="flex-1 bg-[var(--primary)] text-white py-3 rounded-lg font-bold hover:opacity-90 transition">{editId ? "Update Product" : "Add Product"}</button>
-              {editId && <button type="button" onClick={resetForm} className="flex-1 bg-gray-400 text-white py-3 rounded-lg font-bold">Cancel</button>}
-            </div>
-          </form>
-        </div>
+      <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
 
+  {/* Background Video */}
+  <video
+    autoPlay
+    loop
+    muted
+    playsInline
+    className="absolute top-0 left-0 w-full h-full object-cover"
+  >
+    <source src="/White and Orange Modern Cooking Vlog Video (1).mp4" type="video/mp4" />
+  </video>
+
+  {/* Overlay (optional dark layer) */}
+  <div className="absolute inset-0 bg-black/40"></div>
+
+  {/* Form Card */}
+  <div className="relative z-10 mb-12 min-w-xl  mx-auto p-6 bg-white/40 backdrop-blur-md rounded-2xl shadow-2xl">
+    <h2 className="text-2xl font-bold text-center mb-4">
+      {editId ? "Edit Product" : "Add Product"}
+    </h2>
+
+    <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+      <input
+        type="text"
+        placeholder="Product Name"
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+        className="p-3 border rounded-lg focus:ring-2 focus:ring-[var(--primary)]"
+      />
+
+      <textarea
+        placeholder="Product Description"
+        value={description}
+        onChange={(e) => setDescription(e.target.value)}
+        className="p-3 border rounded-lg focus:ring-2 focus:ring-[var(--primary)]"
+      />
+
+      <input
+        type="number"
+        placeholder="Price"
+        value={price}
+        onChange={(e) => setPrice(e.target.value)}
+        className="p-3 border rounded-lg focus:ring-2 focus:ring-[var(--primary)]"
+      />
+<CustomDropdown onChange={(value) => setCategory(value as CategoryType)} />
+      <label className="flex flex-col items-center justify-center w-full h-36 border-2 border-dashed border-[var(--primary)] rounded-xl cursor-pointer bg-[var(--primary)]/10 hover:bg-[var(--primary)]/20 transition">
+        <span className="text-3xl">📷</span>
+        <p className="text-sm font-semibold">Upload product image</p>
+        <input
+          type="file"
+          accept="image/*"
+          className="hidden"
+          onChange={(e) =>
+            handleImageChange(e.target.files?.[0] || null)
+          }
+        />
+      </label>
+
+      {preview && (
+        <img src={preview} className="h-40 object-contain rounded-lg border" />
+      )}
+
+      <div className="flex gap-3">
+        <button
+          type="submit"
+          className="flex-1 bg-[var(--primary)] text-white py-3 rounded-lg font-bold hover:opacity-90 transition"
+        >
+          {editId ? "Update Product" : "Add Product"}
+        </button>
+
+        {editId && (
+          <button
+            type="button"
+            onClick={resetForm}
+            className="flex-1 bg-gray-400 text-white py-3 rounded-lg font-bold"
+          >
+            Cancel
+          </button>
+        )}
+      </div>
+    </form>
+  </div>
+
+</section>
         {/* FILTER */}
         <div className="flex justify-center gap-4 mb-10 mt-4">
           {["all", "signature", "snacks", "drinks"].map((cat) => (

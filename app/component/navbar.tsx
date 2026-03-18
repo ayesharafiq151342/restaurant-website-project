@@ -1,33 +1,50 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Search, User, ShoppingBag } from "lucide-react";
+import { User, ShoppingBag, ChevronDown, Menu, X } from "lucide-react";
 import Image from "next/image";
 import { useCart } from "./CartContext";
 import { useAuth } from "../context/AuthContext";
 import { useOrders } from "./OrderContext";
 
+interface Order {
+  _id: string;
+  productId: string;
+  name: string;
+  price: number;
+  quantity: number;
+  status?: "Received" | "Cooking" | "Ready";
+}
+
 export default function Navbar() {
   const pathname = usePathname();
   const router = useRouter();
-  const { user, logout } = useAuth(); // use the logout from context
-  const [searchOpen, setSearchOpen] = useState(false);
-  const [search, setSearch] = useState("");
+  const { user, logout } = useAuth();
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
   const { orders } = useOrders();
   const { cart } = useCart();
 
-  // total cart items & price
   const totalCartItems = cart.reduce((sum, item) => sum + item.qty, 0);
   const totalCartPrice = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
-
-  // total orders items & price
   const totalOrderItems = orders.reduce((sum, o) => sum + o.quantity, 0);
   const totalOrderPrice = orders.reduce((sum, o) => sum + o.price * o.quantity, 0);
 
   const totalItems = totalCartItems + totalOrderItems;
   const totalPrice = totalCartPrice + totalOrderPrice;
+
+  const latestOrder = orders[orders.length - 1];
+  const latestStatus = latestOrder?.status || null;
+
+  const getStatusStyle = (status: string) => {
+    if (status === "Received") return "bg-gray-100 text-gray-700";
+    if (status === "Cooking") return "bg-yellow-100 text-yellow-700 animate-pulse";
+    if (status === "Ready") return "bg-green-100 text-green-700";
+    return "";
+  };
 
   const menuItems = [
     { name: "Home", href: "/product-category/newarrivals" },
@@ -36,30 +53,32 @@ export default function Navbar() {
     { name: "Ordernow", href: "/product-category/bangles" },
   ];
 
-  const handleSearch = () => {
-    if (!search) return;
-    router.push(`/product-category/${search.toLowerCase()}`);
-    setSearch("");
-    setSearchOpen(false);
+  const handleLogout = async () => {
+    try {
+      await fetch("http://localhost:5000/api/auth/logout", {
+        method: "POST",
+        credentials: "include",
+      });
+      logout();
+      router.push("/");
+    } catch (err) {
+      console.error("Logout error:", err);
+    }
   };
 
-const handleLogout = async () => {
-  try {
-    // Call backend logout to clear cookies
-    await fetch("http://localhost:5000/api/auth/logout", {
-      method: "POST",
-      credentials: "include",
-    });
-
-    logout(); // clear user from context + localStorage
-    router.push("/"); // <-- redirect to home page after logout
-  } catch (err) {
-    console.error("Logout error:", err);
-  }
-};
+  // Close dropdown on outside click
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setDropdownOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   return (
-    <nav className="bg-[var(--accent)] text-white px-4 sm:px-6 md:px-8 py-4 flex items-center">
+    <nav className="bg-[var(--accent)] text-white px-4 sm:px-6 md:px-8 py-3 flex items-center justify-between sticky top-0 z-50 shadow-md">
       {/* Logo */}
       <Link href="/jewellery" className="flex-shrink-0">
         <Image
@@ -71,8 +90,8 @@ const handleLogout = async () => {
         />
       </Link>
 
-      {/* Desktop menu */}
-      <ul className="hidden md:flex gap-8 font-bangers uppercase text-xl lg:text-2xl tracking-wide ml-auto">
+      {/* Desktop Menu */}
+      <ul className="hidden md:flex gap-8 font-bangers uppercase text-xl lg:text-2xl tracking-wide">
         {menuItems.map((item, i) => (
           <li key={i}>
             <Link
@@ -89,53 +108,119 @@ const handleLogout = async () => {
         ))}
       </ul>
 
-      {/* Desktop icons */}
-      <div className="hidden md:flex items-center gap-6 ml-auto">
-        {/* Search */}
-        
-
-        {/* User */}
-        {user ? (
-          <div className="flex items-center gap-3">
-            <span className="font-semibold text-[var(--golden)]">
-              Hello, {user.name || user.email.split("@")[0]} 👋
-            </span><div
-    className="relative cursor-pointer ml-5 flex items-center gap-2"
-    onClick={() => router.push("/user/order")}
-  >
-    <ShoppingBag className="w-6 h-6 hover:text-[var(--golden)] transition" />
-
-    {/* Total Items */}
-    {totalItems > 0 && (
-      <span className="absolute -top-2 -right-2 bg-[var(--primary)] text-white text-xs w-5 h-5 flex items-center justify-center rounded-full shadow-md">
-        {totalItems}
-      </span>
-    )}
-
-    {/* Total Price */}
-    {totalPrice > 0 && (
-      <span className="ml-2 text-sm font-semibold hidden lg:inline">
-        Rs {totalPrice.toFixed(0)}
-      </span>
-    )}
-  </div>
+      {/* Desktop User Section */}
+      <div className="hidden md:flex items-center gap-4 ml-auto">
+        {user && (
+          <div className="relative" ref={dropdownRef}>
             <button
-              onClick={handleLogout}
-              className="text-sm bg-[var(--primary)] px-3 py-1 ml-5 rounded hover:bg-[var(--primary-hover)] "
+              onClick={() => setDropdownOpen((prev) => !prev)}
+              className="flex items-center gap-2 bg-[var(--primary)] px-3 py-1 rounded-lg hover:bg-[var(--primary-hover)] transition shadow"
             >
-              Logout
+              {latestStatus && (
+                <span
+                  className={`px-2 py-0.5 rounded-full text-xs font-semibold ${getStatusStyle(latestStatus)}`}
+                >
+                  {latestStatus === "Received" && "📥 Received"}
+                  {latestStatus === "Cooking" && "🍳 Cooking"}
+                  {latestStatus === "Ready" && "✅ Ready"}
+                </span>
+              )}
+              <span className="hidden sm:inline font-semibold">{user.name || user.email.split("@")[0]}</span>
+              <ChevronDown className="w-4 h-4" />
             </button>
+
+            {dropdownOpen && (
+              <div className="absolute right-0 mt-2 w-56 bg-white text-gray-800 rounded-lg shadow-lg border border-gray-200 animate-fadeIn overflow-hidden">
+                <div className="px-4 py-3 border-b border-gray-200">
+                  <span className="font-semibold">Hello, {user.name || user.email.split("@")[0]}!</span>
+                </div>
+
+                <div className="px-4 py-2 text-sm flex justify-between">
+                  <span>Status:</span>
+                  <span className={`px-2 py-0.5 rounded-full text-xs font-semibold ${getStatusStyle(latestStatus || "")}`}>
+                    {latestStatus === "Received" && "📥 Received"}
+                    {latestStatus === "Cooking" && "🍳 Cooking"}
+                    {latestStatus === "Ready" && "✅ Ready"}
+                  </span>
+                </div>
+
+                <div className="px-4 py-2 text-sm flex justify-between">
+                  <span>Total Items:</span>
+                  <span>{totalItems}</span>
+                </div>
+
+                <div className="px-4 py-2 text-sm flex justify-between">
+                  <span>Total Price:</span>
+                  <span>Rs {totalPrice.toFixed(0)}</span>
+                </div>
+
+                <button
+                  onClick={handleLogout}
+                  className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100 transition"
+                >
+                  Logout
+                </button>
+              </div>
+            )}
           </div>
-        ) : (
+        )}
+
+        {!user && (
           <Link href="/login">
             <User className="w-6 h-6 cursor-pointer hover:text-[var(--golden)] transition" />
           </Link>
         )}
-
- {/* ShoppingBag showing total items + total price */}
-
-
       </div>
+
+      {/* Mobile Menu Button */}
+      <div className="md:hidden flex items-center gap-4">
+        <button onClick={() => setMobileMenuOpen((prev) => !prev)}>
+          {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+        </button>
+      </div>
+
+      {/* Mobile Menu */}
+      {mobileMenuOpen && (
+        <div className="absolute top-full left-0 w-full bg-[var(--accent)] text-white shadow-lg flex flex-col gap-2 py-3 md:hidden z-40">
+          {menuItems.map((item, i) => (
+            <Link
+              key={i}
+              href={item.href}
+              className="px-4 py-2 hover:bg-[var(--primary)] transition"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              {item.name}
+            </Link>
+          ))}
+
+          {user && (
+            <div className="border-t border-gray-400 mt-2 pt-2 px-4 flex flex-col gap-2">
+              <span className="font-semibold">{user.name || user.email.split("@")[0]}</span>
+              {latestStatus && (
+                <span className={`px-2 py-0.5 rounded-full text-xs font-semibold ${getStatusStyle(latestStatus)}`}>
+                  {latestStatus === "Received" && "📥 Received"}
+                  {latestStatus === "Cooking" && "🍳 Cooking"}
+                  {latestStatus === "Ready" && "✅ Ready"}
+                </span>
+              )}
+              <span>Total Items: {totalItems}</span>
+              <span>Total Price: Rs {totalPrice.toFixed(0)}</span>
+              <button
+                onClick={handleLogout}
+                className="text-red-600 py-1 hover:bg-[var(--primary-hover)] rounded transition"
+              >
+                Logout
+              </button>
+            </div>
+          )}
+
+          {!user && (
+            <Link href="/login" className="px-4 py-2 hover:bg-[var(--primary)] transition">
+              Login
+            </Link>
+          )}
+        </div>
+      )}
     </nav>
   );
 }
