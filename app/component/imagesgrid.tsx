@@ -22,7 +22,7 @@ export default function FoodGridHero() {
     <section className="relative w-full">
 
       {/* Top Shape */}
-      <div className="w-full h-24 bg-[var(--accent)] rounded-b-[50%]"></div>
+     =
 
       {/* Images Grid */}
       <div className="grid grid-cols-6">
