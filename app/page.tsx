@@ -22,7 +22,7 @@ interface Product {
   image: string;
   description: string;
 }
-export default function Home({ params }: { params: { slug: string } }) {
+export default function Home() {
   const [products, setProducts] = useState<Product[]>([]);
   const [filter, setFilter] = useState<CategoryType>("all");
 

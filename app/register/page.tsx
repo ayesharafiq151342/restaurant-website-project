@@ -5,10 +5,10 @@ import { useRouter } from "next/navigation";
 import api from "@/utils/api";
 
 export default function Register() {
-  const [name, setName] = useState(""); // NEW: name state
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [role, setRole] = useState("user");
+  const [role, setRole] = useState<"user" | "admin">("user");
   const [popup, setPopup] = useState("");
   const [showDropdown, setShowDropdown] = useState(false);
   const router = useRouter();
@@ -16,25 +16,18 @@ export default function Register() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      // Send name along with email, password, role
       await api.post("/auth/register", { name, email, password, role });
-
       setPopup("Registration Successful 🎉");
-      setTimeout(() => {
-        router.push("/login"); // redirect to login page
-      }, 2000);
-
+      setTimeout(() => router.push("/login"), 2000);
     } catch (err: any) {
       const message = err.response?.data?.message || "Registration failed ❌";
       setPopup(message);
-
       setTimeout(() => setPopup(""), 2000);
     }
   };
 
   return (
-    <div className="relative min-h-screen flex items-center justify-center bg-[#e9dcd6] overflow-hidden px-4">
-
+    <div className="relative min-h-screen flex items-center justify-center bg-[#e9dcd6] px-4 overflow-hidden">
       {/* Background Shapes */}
       <div className="absolute top-0 left-0 w-[450px] h-[450px] bg-[var(--primary)] rounded-br-[200px]"></div>
       <div className="absolute bottom-0 left-0 w-[400px] h-[300px] bg-[var(--accent)] rounded-tr-[200px]"></div>
@@ -53,16 +46,12 @@ export default function Register() {
 
         {/* LEFT */}
         <div className="w-full md:w-1/2 p-12 flex flex-col justify-center">
-          <div className="mb-10">
-            <h1 className="text-4xl font-extrabold text-[var(--accent)]">🍔 Foodle</h1>
-            <p className="text-gray-500 text-sm">Made with love ❤️</p>
-          </div>
+          <h1 className="text-4xl font-extrabold text-[var(--accent)] mb-2">🍔 Foodle</h1>
+          <p className="text-gray-500 text-sm mb-6">Made with love ❤️</p>
 
-          <h2 className="text-2xl font-bold mb-1">Create Account</h2>
-          <p className="text-gray-500 mb-6">Register as User or Admin</p>
+          <h2 className="text-2xl font-bold mb-6">Create Account</h2>
 
           <form onSubmit={handleSubmit} className="space-y-5">
-            {/* Name Input */}
             <input
               type="text"
               placeholder="Enter Your Name"
@@ -71,8 +60,6 @@ export default function Register() {
               className="w-full px-5 py-3 rounded-full bg-orange-50 focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
               required
             />
-
-            {/* Email Input */}
             <input
               type="email"
               placeholder="Enter Email"
@@ -81,8 +68,6 @@ export default function Register() {
               className="w-full px-5 py-3 rounded-full bg-orange-50 focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
               required
             />
-
-            {/* Password Input */}
             <input
               type="password"
               placeholder="Enter Password"
@@ -92,16 +77,18 @@ export default function Register() {
               required
             />
 
-            {/* Role Dropdown */}
+            {/* Role Selection */}
             <div className="relative w-full">
               <button
                 type="button"
-                className="w-full px-5 py-3 rounded-full bg-orange-50 focus:outline-none focus:ring-2 focus:ring-[var(--primary)] flex justify-between items-center"
+                className="w-full px-5 py-3 rounded-full bg-orange-50 flex justify-between items-center focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
                 onClick={() => setShowDropdown(!showDropdown)}
               >
                 {role.charAt(0).toUpperCase() + role.slice(1)}
                 <svg
-                  className={`w-4 h-4 text-orange-600 transform transition-transform duration-200 ${showDropdown ? "rotate-180" : "rotate-0"}`}
+                  className={`w-4 h-4 text-orange-600 transform transition-transform duration-200 ${
+                    showDropdown ? "rotate-180" : "rotate-0"
+                  }`}
                   fill="none"
                   stroke="currentColor"
                   strokeWidth="2"
@@ -118,10 +105,8 @@ export default function Register() {
                       key={r}
                       className="px-5 py-3 hover:bg-orange-100 cursor-pointer rounded-xl"
                       onClick={() => {
-                        setRole(r);
+                        setRole(r as "user" | "admin");
                         setShowDropdown(false);
-                        setPopup(`Role set to ${r.charAt(0).toUpperCase() + r.slice(1)}`);
-                        setTimeout(() => setPopup(""), 2000);
                       }}
                     >
                       {r.charAt(0).toUpperCase() + r.slice(1)}
@@ -137,10 +122,20 @@ export default function Register() {
             >
               Sign Up
             </button>
+
+            <p className="mt-4 text-sm text-gray-500">
+              Already have an account?{" "}
+              <span
+                onClick={() => router.push("/login")}
+                className="text-[var(--accent)] font-semibold cursor-pointer hover:underline"
+              >
+                Login
+              </span>
+            </p>
           </form>
         </div>
 
-        {/* RIGHT */}
+        {/* RIGHT IMAGE */}
         <div className="hidden md:flex w-1/2 bg-[var(--primary)] items-center justify-center">
           <img src="/burger.png" alt="Burger" className="w-[85%] drop-shadow-2xl" />
         </div>

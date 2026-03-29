@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { User, ShoppingBag, ChevronDown, Menu, X } from "lucide-react";
+import { User, ChevronDown, Menu, X } from "lucide-react";
 import Image from "next/image";
 import { useCart } from "./CartContext";
 import { useAuth } from "../context/AuthContext";
@@ -66,7 +66,6 @@ export default function Navbar() {
     }
   };
 
-  // Close dropdown on outside click
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
@@ -78,9 +77,10 @@ export default function Navbar() {
   }, []);
 
   return (
-    <nav className="bg-[var(--accent)] text-white px-4 sm:px-6 md:px-8 py-3 flex items-center justify-between sticky top-0 z-50 shadow-md">
+    <nav className="fixed top-0 left-0 w-full bg-[var(--accent)] text-white px-4 sm:px-6 md:px-8 py-3 flex items-center justify-between z-[9999] shadow-md">
+      
       {/* Logo */}
-      <Link href="/jewellery" className="flex-shrink-0">
+      <Link href="/" className="flex-shrink-0">
         <Image
           src="/logo.png"
           alt="HJ Jewellery"
@@ -90,8 +90,8 @@ export default function Navbar() {
         />
       </Link>
 
-      {/* Desktop Menu */}
-      <ul className="hidden md:flex gap-8 font-bangers uppercase text-xl lg:text-2xl tracking-wide">
+      {/* ✅ Center Menu */}
+      <ul className="hidden md:flex gap-8 font-bangers uppercase text-xl lg:text-2xl tracking-wide absolute left-1/2 transform -translate-x-1/2">
         {menuItems.map((item, i) => (
           <li key={i}>
             <Link
@@ -108,7 +108,7 @@ export default function Navbar() {
         ))}
       </ul>
 
-      {/* Desktop User Section */}
+      {/* Right Side */}
       <div className="hidden md:flex items-center gap-4 ml-auto">
         {user && (
           <div className="relative" ref={dropdownRef}>
@@ -117,31 +117,22 @@ export default function Navbar() {
               className="flex items-center gap-2 bg-[var(--primary)] px-3 py-1 rounded-lg hover:bg-[var(--primary-hover)] transition shadow"
             >
               {latestStatus && (
-                <span
-                  className={`px-2 py-0.5 rounded-full text-xs font-semibold ${getStatusStyle(latestStatus)}`}
-                >
+                <span className={`px-2 py-0.5 rounded-full text-xs font-semibold ${getStatusStyle(latestStatus)}`}>
                   {latestStatus === "Received" && "📥 Received"}
                   {latestStatus === "Cooking" && "🍳 Cooking"}
                   {latestStatus === "Ready" && "✅ Ready"}
                 </span>
               )}
-              <span className="hidden sm:inline font-semibold">{user.name || user.email.split("@")[0]}</span>
+              <span className="hidden sm:inline font-semibold">
+                {user.name || user.email.split("@")[0]}
+              </span>
               <ChevronDown className="w-4 h-4" />
             </button>
 
             {dropdownOpen && (
-              <div className="absolute right-0 mt-2 w-56 bg-white text-gray-800 rounded-lg shadow-lg border border-gray-200 animate-fadeIn overflow-hidden">
+              <div className="absolute right-0 mt-2 w-56 bg-white text-gray-800 rounded-lg shadow-lg border border-gray-200 overflow-hidden">
                 <div className="px-4 py-3 border-b border-gray-200">
-                  <span className="font-semibold">Hello, {user.name || user.email.split("@")[0]}!</span>
-                </div>
-
-                <div className="px-4 py-2 text-sm flex justify-between">
-                  <span>Status:</span>
-                  <span className={`px-2 py-0.5 rounded-full text-xs font-semibold ${getStatusStyle(latestStatus || "")}`}>
-                    {latestStatus === "Received" && "📥 Received"}
-                    {latestStatus === "Cooking" && "🍳 Cooking"}
-                    {latestStatus === "Ready" && "✅ Ready"}
-                  </span>
+                  Hello, {user.name || user.email.split("@")[0]}!
                 </div>
 
                 <div className="px-4 py-2 text-sm flex justify-between">
@@ -156,7 +147,7 @@ export default function Navbar() {
 
                 <button
                   onClick={handleLogout}
-                  className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100 transition"
+                  className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
                 >
                   Logout
                 </button>
@@ -167,58 +158,26 @@ export default function Navbar() {
 
         {!user && (
           <Link href="/login">
-            <User className="w-6 h-6 cursor-pointer hover:text-[var(--golden)] transition" />
+            <User className="w-6 h-6 cursor-pointer hover:text-[var(--golden)]" />
           </Link>
         )}
       </div>
 
-      {/* Mobile Menu Button */}
-      <div className="md:hidden flex items-center gap-4">
+      {/* Mobile Button */}
+      <div className="md:hidden">
         <button onClick={() => setMobileMenuOpen((prev) => !prev)}>
-          {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+          {mobileMenuOpen ? <X /> : <Menu />}
         </button>
       </div>
 
       {/* Mobile Menu */}
       {mobileMenuOpen && (
-        <div className="absolute top-full left-0 w-full bg-[var(--accent)] text-white shadow-lg flex flex-col gap-2 py-3 md:hidden z-40">
+        <div className="absolute top-full left-0 w-full bg-[var(--accent)] flex flex-col md:hidden">
           {menuItems.map((item, i) => (
-            <Link
-              key={i}
-              href={item.href}
-              className="px-4 py-2 hover:bg-[var(--primary)] transition"
-              onClick={() => setMobileMenuOpen(false)}
-            >
+            <Link key={i} href={item.href} className="px-4 py-2">
               {item.name}
             </Link>
           ))}
-
-          {user && (
-            <div className="border-t border-gray-400 mt-2 pt-2 px-4 flex flex-col gap-2">
-              <span className="font-semibold">{user.name || user.email.split("@")[0]}</span>
-              {latestStatus && (
-                <span className={`px-2 py-0.5 rounded-full text-xs font-semibold ${getStatusStyle(latestStatus)}`}>
-                  {latestStatus === "Received" && "📥 Received"}
-                  {latestStatus === "Cooking" && "🍳 Cooking"}
-                  {latestStatus === "Ready" && "✅ Ready"}
-                </span>
-              )}
-              <span>Total Items: {totalItems}</span>
-              <span>Total Price: Rs {totalPrice.toFixed(0)}</span>
-              <button
-                onClick={handleLogout}
-                className="text-red-600 py-1 hover:bg-[var(--primary-hover)] rounded transition"
-              >
-                Logout
-              </button>
-            </div>
-          )}
-
-          {!user && (
-            <Link href="/login" className="px-4 py-2 hover:bg-[var(--primary)] transition">
-              Login
-            </Link>
-          )}
         </div>
       )}
     </nav>

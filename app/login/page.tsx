@@ -6,64 +6,54 @@ import { useAuth } from "../context/AuthContext";
 import api from "@/utils/api";
 
 export default function LoginPage() {
-
-  const [email,setEmail] = useState("");
-  const [password,setPassword] = useState("");
-  const [popup,setPopup] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [popup, setPopup] = useState("");
+  const [role, setRole] = useState<"user" | "admin">("user");
 
   const router = useRouter();
   const searchParams = useSearchParams();
-
-  // redirect after login
-  const redirectTo = searchParams.get("redirect") || "/user";
-  const productId = searchParams.get("productId");
+  const redirectTo = searchParams.get("redirect") || (role === "admin" ? "/admin" : "/user");
 
   const { login } = useAuth();
 
-  const handleSubmit = async (e:React.FormEvent) => {
+  // Validation functions
+  const isEmailValid = (email: string) => /^[\w.-]+@gmail\.com$/.test(email);
+  const isPasswordValid = (pass: string) =>
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{6,}$/.test(pass);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    // FRONTEND validation
+    if (!isEmailValid(email)) {
+      setPopup("Enter a valid Gmail address ❌");
+      setTimeout(() => setPopup(""), 2000);
+      return;
+    }
+    if (!isPasswordValid(password)) {
+      setPopup("Password must be 6+ chars, include uppercase, lowercase, number & symbol ❌");
+      setTimeout(() => setPopup(""), 3000);
+      return;
+    }
+
     try {
-
-      const res = await api.post("/auth/login",{
-        email,
-        password
-      });
-
+      const res = await api.post("/auth/login", { email, password });
       const userData = res.data.user;
 
-      // save user in context
       login(userData);
 
       setPopup("Login Successful 🎉");
-
-      setTimeout(()=>{
-
-        if(productId){
-          router.push(`${redirectTo}?productId=${productId}`);
-        }else{
-          router.push(redirectTo);
-        }
-
-      },1000);
-
-    } catch(err:any){
-
+      setTimeout(() => router.push(redirectTo), 1000);
+    } catch (err: any) {
       const message = err.response?.data?.message || "Login failed ❌";
-
       setPopup(message);
-
-      setTimeout(()=>{
-        setPopup("");
-      },2000);
-
+      setTimeout(() => setPopup(""), 2000);
     }
   };
 
   return (
-
-    <div className="relative min-h-screen flex items-center justify-center bg-[#e9dcd6] overflow-hidden px-4">
-
+    <div className="relative min-h-screen flex items-center justify-center bg-[#e9dcd6] px-4 overflow-hidden">
       {/* Background Shapes */}
       <div className="absolute top-0 left-0 w-[450px] h-[450px] bg-[var(--primary)] rounded-br-[200px]"></div>
       <div className="absolute bottom-0 left-0 w-[400px] h-[300px] bg-[var(--accent)] rounded-tr-[200px]"></div>
@@ -80,79 +70,69 @@ export default function LoginPage() {
       {/* Main Card */}
       <div className="relative z-10 w-full max-w-6xl bg-white rounded-3xl shadow-2xl overflow-hidden flex flex-col md:flex-row">
 
-        {/* Left Section */}
+        {/* LEFT */}
         <div className="w-full md:w-1/2 p-12 flex flex-col justify-center">
+          <h1 className="text-4xl font-extrabold text-[var(--accent)] mb-2">🍔 Foodle</h1>
+          <p className="text-gray-500 text-sm mb-6">Made with love ❤️</p>
 
-          <h1 className="text-4xl font-extrabold text-[var(--accent)]">
-            🍔 Foodle
-          </h1>
+          <h2 className="text-2xl font-bold mb-6">Login</h2>
 
-          <p className="text-gray-500 text-sm mb-8">
-            Made with love ❤️
-          </p>
-
-          <h2 className="text-2xl font-bold mb-6">
-            Login
-          </h2>
+          {/* Role Selection */}
+          <div className="flex gap-4 mb-6">
+            {["user", "admin"].map((r) => (
+              <button
+                key={r}
+                type="button"
+                onClick={() => setRole(r as "user" | "admin")}
+                className={`flex-1 py-2 rounded-full font-semibold transition ${
+                  role === r ? "bg-[var(--primary)] text-white" : "bg-gray-200"
+                }`}
+              >
+                {r.charAt(0).toUpperCase() + r.slice(1)}
+              </button>
+            ))}
+          </div>
 
           <form onSubmit={handleSubmit} className="space-y-5">
-
             <input
               type="email"
-              placeholder="Enter Email"
+              placeholder="Enter Gmail"
               value={email}
-              onChange={(e)=>setEmail(e.target.value)}
+              onChange={(e) => setEmail(e.target.value)}
               className="w-full px-5 py-3 rounded-full bg-orange-50 focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
               required
             />
-
             <input
               type="password"
               placeholder="Enter Password"
               value={password}
-              onChange={(e)=>setPassword(e.target.value)}
+              onChange={(e) => setPassword(e.target.value)}
               className="w-full px-5 py-3 rounded-full bg-orange-50 focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
               required
             />
-
             <button
               type="submit"
               className="w-full bg-[var(--primary)] hover:bg-[var(--primary-hover)] transition text-white py-3 rounded-full font-semibold shadow-lg"
             >
               Login
             </button>
-
             <p className="mt-4 text-sm text-gray-500">
-
               Don't have an account?{" "}
-
               <span
-                onClick={()=>router.push("/register")}
+                onClick={() => router.push("/register")}
                 className="text-[var(--accent)] font-semibold cursor-pointer hover:underline"
               >
                 Sign Up
               </span>
-
             </p>
-
           </form>
-
         </div>
 
-        {/* Right Section */}
+        {/* RIGHT IMAGE */}
         <div className="hidden md:flex w-1/2 bg-[var(--primary)] items-center justify-center">
-
-          <img
-            src="/burger.png"
-            alt="Burger"
-            className="w-[85%] drop-shadow-2xl"
-          />
-
+          <img src="/burger.png" alt="Burger" className="w-[85%] drop-shadow-2xl" />
         </div>
-
       </div>
-
     </div>
-
   );
 }
