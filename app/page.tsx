@@ -11,6 +11,8 @@ import Footer from "./component/footer_jewllery";
 import ProductGrid from "./admin/ProductGrid";
 import ParallaxSection from "./component/paralex";
 import FoodGridHero from "./component/imagesgrid";
+import FAQSection from "./component/faq";
+import Hero from "./component/hero";
 
 type CategoryType = "all" | "signature" | "snacks" | "drinks";
 
@@ -172,66 +174,100 @@ export default function Home() {
 </section>
 
 
+<section className="py-16 md:py-20 px-4 md:px-6">
+  <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-10 items-center">
 
-<section className=" py-20">
-  <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-10 items-center px-6">
+    {/* LEFT CONTENT */}
+    <div className="text-center md:text-left">
+      <h2 className="text-3xl sm:text-4xl md:text-5xl font-serif italic mb-3">
+        Little About Us
+      </h2>
 
-  
-    <div>
-      <h2 className="text-5xl font-serif italic mb-4">Little About Us</h2>
-      <h4 className="uppercase tracking-widest text-gray-600 mb-6">
+      <h4 className="uppercase tracking-widest text-gray-600 text-xs sm:text-sm mb-4">
         The History of Us
       </h4>
 
-      <p className="text-gray-600 leading-7 mb-8">
-  We are a university canteen built on a passion for fresh flavors and affordable meals. What started as a small campus spot has grown into a favorite gathering place for students and staff alike.
-    </p>
+      <p className="text-gray-600 text-sm sm:text-base leading-6 md:leading-7 mb-6">
+        We are a university canteen built on a passion for fresh flavors and affordable meals.
+        What started as a small campus spot has grown into a favorite gathering place.
+      </p>
 
-      <button className="border border-[var(--primary)] px-6 py-3 uppercase tracking-wider hover:bg-[var(--primary)] hover:text-white transition">
+      <button className="border border-[var(--primary)] px-5 py-2 text-xs sm:text-sm md:text-base uppercase tracking-wider hover:bg-[var(--primary)] hover:text-white transition">
         Learn More
       </button>
     </div>
 
- 
-   <div className="flex gap-8 justify-center">
+    {/* RIGHT IMAGES */}
+    <div className="flex justify-center gap-4 sm:gap-6 md:gap-8 flex-wrap">
 
-  <motion.img
-    src="/food-circle-5.webp"
-    alt="Food 1"
-    initial={{ opacity: 0, y: 60 }}
-    whileInView={{ opacity: 1, y: 0 }}
-    transition={{ duration: 0.8 }}
-    whileHover={{ scale: 1.08 }}
-    viewport={{ once: true }}
-    className="w-56 h-56 rounded-full object-cover shadow-lg cursor-pointer"
-  />
+      <motion.img
+        src="/food-circle-5.webp"
+        alt="Food 1"
+        initial={{ opacity: 0, y: 60 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8 }}
+        whileHover={{ scale: 1.08 }}
+        viewport={{ once: true }}
+        className="w-28 h-28 sm:w-36 sm:h-36 md:w-48 md:h-48 xl:w-56 xl:h-56 rounded-full object-cover shadow-lg cursor-pointer"
+      />
 
-  <motion.img
-    src="/food-circle-6.webp"
-    alt="Food 2"
-    initial={{ opacity: 0, y: 60 }}
-    whileInView={{ opacity: 1, y: 0 }}
-    transition={{ duration: 0.8, delay: 0.3 }}
-    whileHover={{ scale: 1.08 }}
-    viewport={{ once: true }}
-    className="w-56 h-56 rounded-full object-cover shadow-lg cursor-pointer"
-  />
+      <motion.img
+        src="/food-circle-6.webp"
+        alt="Food 2"
+        initial={{ opacity: 0, y: 60 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8, delay: 0.3 }}
+        whileHover={{ scale: 1.08 }}
+        viewport={{ once: true }}
+        className="w-28 h-28 sm:w-36 sm:h-36 md:w-48 md:h-48 xl:w-56 xl:h-56 rounded-full object-cover shadow-lg cursor-pointer"
+      />
+
+    </div>
+  </div>
+</section>
+<div className="min-h-screen px-4 sm:px-6 py-8 bg-[var(--skin)]">
+
+  {/* FILTER BAR */}
+  <div className="flex flex-wrap justify-center gap-2 sm:gap-3 mb-8">
+
+    {["all", "signature", "snacks", "drinks"].map((cat) => (
+      <button
+        key={cat}
+        onClick={() => setFilter(cat as CategoryType)}
+        className={`
+          px-4 sm:px-6 py-1.5 sm:py-2
+          text-xs sm:text-sm md:text-base
+          rounded-full font-semibold
+          transition-all duration-300 border
+          
+          ${
+            filter === cat
+              ? "bg-[var(--primary)] text-white border-[var(--primary)] shadow-md scale-105"
+              : "bg-white text-gray-700 border-gray-300 hover:bg-[var(--primary)] hover:text-white hover:border-[var(--primary)]"
+          }
+        `}
+      >
+        {cat.toUpperCase()}
+      </button>
+    ))}
+
+  </div>
+
+  {/* PRODUCT GRID */}
+  <div className="max-w-6xl mx-auto">
+    <ProductGrid
+      products={visibleProducts}
+      isAdmin={false}
+      limit={6}
+    />
+  </div>
 
 </div>
-  </div>
-</section>    <div className="min-h-screen p-6 bg-[var(--skin)]">
-      <div className="flex justify-center gap-4 mb-10 mt-4">
-        {["all", "signature", "snacks", "drinks"].map((cat) => (
-          <button key={cat} onClick={() => setFilter(cat as CategoryType)} className={`px-6 py-2 rounded-full font-semibold transition ${filter === cat ? "bg-[var(--primary)] text-white" : "bg-gray-200"}`}>
-            {cat.toUpperCase()}
-          </button>
-        ))}
-      </div>
 
-      <ProductGrid products={visibleProducts} isAdmin={false} limit={6} />
-   </div>
-<ParallaxSection />
+<ParallaxSection /><Hero/>
 <FoodGridHero />
+<FAQSection/>
+
 <Footer/>
     </>
   );

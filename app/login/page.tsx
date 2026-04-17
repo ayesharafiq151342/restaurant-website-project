@@ -22,35 +22,31 @@ export default function LoginPage() {
   const isPasswordValid = (pass: string) =>
     /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{6,}$/.test(pass);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
 
-    // FRONTEND validation
-    if (!isEmailValid(email)) {
-      setPopup("Enter a valid Gmail address ❌");
-      setTimeout(() => setPopup(""), 2000);
-      return;
-    }
-    if (!isPasswordValid(password)) {
-      setPopup("Password must be 6+ chars, include uppercase, lowercase, number & symbol ❌");
-      setTimeout(() => setPopup(""), 3000);
-      return;
-    }
+  // FRONTEND validation
+  if (!isEmailValid(email)) {
+    setPopup("Enter a valid Gmail address ❌");
+    setTimeout(() => setPopup(""), 2000);
+    return;
+  }
 
-    try {
-      const res = await api.post("/auth/login", { email, password });
-      const userData = res.data.user;
+  try {
+    const res = await api.post("/auth/login", { email, password });
+    const userData = res.data.user;
 
-      login(userData);
+    login(userData);
 
-      setPopup("Login Successful 🎉");
-      setTimeout(() => router.push(redirectTo), 1000);
-    } catch (err: any) {
-      const message = err.response?.data?.message || "Login failed ❌";
-      setPopup(message);
-      setTimeout(() => setPopup(""), 2000);
-    }
-  };
+    setPopup("Login Successful 🎉");
+    setTimeout(() => router.push(redirectTo), 1000);
+  } catch (err: any) {
+    const message = err.response?.data?.message || "Login failed ❌";
+    setPopup(message);
+    setTimeout(() => setPopup(""), 2000);
+  }
+};
+
 
   return (
     <div className="relative min-h-screen flex items-center justify-center bg-[#e9dcd6] px-4 overflow-hidden">

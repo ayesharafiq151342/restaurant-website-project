@@ -47,8 +47,8 @@ export default function Navbar() {
   };
 
   const menuItems = [
-    { name: "Home", href: "/product-category/newarrivals" },
-    { name: "About", href: "/product-category/mala" },
+    { name: "Home", href: "/" },
+    { name: "About", href: "/about" },
     { name: "Menu", href: "/product-category/rings" },
     { name: "Ordernow", href: "/product-category/bangles" },
   ];

@@ -1,50 +1,119 @@
 "use client";
 
-import { motion, useScroll, useTransform } from "framer-motion";
-import { useRef } from "react";
+import { useEffect, useState } from "react";
+import Image from "next/image";
+
+const reviews = [
+  {
+    quote:
+      "If you like unconventional pizza, this place is for you. Picturesque patio on a pedestrian square in the summer.",
+    author: "The Guardian",
+    site: "website-example.com",
+  },
+  {
+    quote:
+      "Amazing food experience with fresh ingredients and fast service.",
+    author: "Food Magazine",
+    site: "website-example.com",
+  },
+  {
+    quote:
+      "One of the best modern food spots with a cozy atmosphere.",
+    author: "Urban Bites",
+    site: "website-example.com",
+  },
+];
 
 export default function ParallaxSection() {
+  const [index, setIndex] = useState(0);
 
-  const ref = useRef(null);
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setIndex((prev) => (prev + 1) % reviews.length);
+    }, 4000);
+    return () => clearInterval(interval);
+  }, []);
 
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ["start start", "end start"]
-  });
+  const prevSlide = () => {
+    setIndex((prev) => (prev - 1 + reviews.length) % reviews.length);
+  };
 
-  const y = useTransform(scrollYProgress, [0, 1], ["0%", "40%"]);
+  const nextSlide = () => {
+    setIndex((prev) => (prev + 1) % reviews.length);
+  };
 
   return (
-    <section ref={ref} className="relative h-[50%] overflow-hidden">
+    <section className="relative w-full h-[350px] sm:h-[450px] md:h-[600px] xl:h-screen flex items-center justify-center text-center overflow-hidden">
 
-      {/* Parallax Background */}
-      <motion.div
-        style={{ y }}
-        className="absolute inset-0"
+      {/* Background */}
+      <Image
+        src="/PALR.jpg"
+        alt="Background"
+        fill
+        className="object-cover "
+        priority
+      />
+
+      {/* Overlay */}
+      <div className="absolute inset-0 bg-black/60" />
+
+      {/* LEFT BUTTON */}
+      <button
+        onClick={prevSlide}
+        className="absolute left-2 sm:left-4 md:left-10 z-20 hover:scale-110 transition"
       >
         <img
-          src="/header.jpg"
-          alt="Parallax"
-          className="w-full h-fuill object-cover"
+          src="/doner.png"
+          alt="prev"
+          className="w-16 sm:w-24 md:w-32 xl:w-44 hidden md:block"
         />
+      </button>
 
-        <div className="absolute inset-0 bg-[var(--accent)]/60"></div>
-      </motion.div>
+      {/* RIGHT BUTTON */}
+      <button
+        onClick={nextSlide}
+        className="absolute right-2 sm:right-4 md:right-10 z-20 hover:scale-110 transition"
+      >
+        <img
+          src="/snaks.png"
+          alt="next"
+          className="w-16 sm:w-24 md:w-32 xl:w-44 hidden md:block"
+        />
+      </button>
 
-      {/* Content */}
-      <div className="relative z-10 flex flex-col items-center justify-center h-full text-center px-4">
+      {/* CONTENT */}
+      <div className="relative z-10 max-w-3xl px-4 sm:px-6 text-white">
 
-        <h1 className="text-5xl md:text-7xl font-bold text-white">
-          Welcome to URBAN BITES
-        </h1>
+        <h2 className="text-lg sm:text-2xl md:text-4xl xl:text-5xl text-[var(--primary)] font-bold mb-4">
+          What the Press Says
+        </h2>
 
-        <p className="mt-4 text-lg md:text-2xl text-white">
-"Delicious bites, happy moments."      </p>
+        <p className="text-xs sm:text-sm md:text-lg xl:text-xl italic leading-relaxed transition-all duration-500">
+          “{reviews[index].quote}”
+        </p>
 
-        <button className="mt-6 px-6 py-3 bg-[var(--golden)] text-white rounded-md">
-     Order Now
-        </button>
+        <div className="mt-4 text-[var(--primary)] font-semibold text-sm md:text-base">
+          {reviews[index].author}
+        </div>
 
+        <div className="text-gray-300 text-xs md:text-sm">
+          {reviews[index].site}
+        </div>
+
+        {/* DOTS */}
+        <div className="flex justify-center mt-4 space-x-2">
+          {reviews.map((_, i) => (
+            <button
+              key={i}
+              onClick={() => setIndex(i)}
+              className={`h-2 rounded-full transition-all ${
+                i === index
+                  ? "bg-[var(--primary)] w-5"
+                  : "bg-gray-400 w-2"
+              }`}
+            />
+          ))}
+        </div>
       </div>
     </section>
   );
